@@ -100,7 +100,7 @@ class FormTest extends TestCase
      * @param bool $isFile
      * @return \PHPUnit\Framework\MockObject\MockObject|Form
      */
-    public function getMock(bool $isFile)
+    protected function getMock(bool $isFile)
     {
         $m = $this->createPartialMock(Form::class, ['isFile', 'run']);
         $m->method('isFile')->willReturn($isFile);

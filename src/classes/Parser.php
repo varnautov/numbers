@@ -5,7 +5,6 @@ namespace varnautov\numbers\classes;
 use varnautov\numbers\interfaces\RunnableInterface;
 
 /**
- * @todo add tests
  * @todo analyze replacement for \SplQueue for better performance
  */
 class Parser implements RunnableInterface
@@ -75,16 +74,48 @@ class Parser implements RunnableInterface
         return substr_count($line, $this->needle);
     }
 
+    /**
+     * FOR TESTING PURPOSES ONLY
+     * @return \Generator
+     */
+    protected function lineGenerator()
+    {
+        while (($line = $this->getLine()) !== false) {
+            yield $line;
+        }
+    }
+
+    /**
+     * FOR TESTING PURPOSES ONLY
+     * @return \Generator
+     */
+    protected function lineGenerator2()
+    {
+        return $this->lineGenerator();
+    }
+
+    /**
+     * FOR TESTING PURPOSES ONLY
+     * @return string|false
+     */
+    protected function getLine()
+    {
+        return stream_get_line($this->fh, $this->lineLength, PHP_EOL);
+    }
+
     protected function findRange()
     {
         $l = 0;
-        rewind($this->fh);
-        while (($line = stream_get_line($this->fh, $this->lineLength, PHP_EOL)) !== false) {
+        $this->rewind();
+        $g = $this->lineGenerator();
+        while ($g->valid()) {
+            $line = $g->current();
             $this->validate($line, ++$l);
             $result = $this->calculateCount($line);
             if ($result > $this->range) {
                 $this->range = $result;
             }
+            $g->next();
         }
         $this->range++;
     }
@@ -98,18 +129,21 @@ class Parser implements RunnableInterface
         }
         // fill
         $offset = 0;
-        rewind($this->fh);
-        while (($line = stream_get_line($this->fh, $this->lineLength, PHP_EOL)) !== false) {
+        $this->rewind();
+        $g = $this->lineGenerator2();
+        while ($g->valid()) {
+            $line = $g->current();
             $result = $this->calculateCount($line);
             $this->counters[$result]->enqueue($offset);
             $offset += strlen($line) + 1;
+            $g->next();
         }
     }
 
     protected function getSorted()
     {
         if ($this->sort === SORT_ASC) {
-            for ($i=0; $i < $this->range; $i++) {
+            for ($i = 0; $i < $this->range; $i++) {
                 $this->getSortedPart($i);
             }
         } else {
@@ -124,13 +158,44 @@ class Parser implements RunnableInterface
         $q = $this->counters[$i];
         while (!$q->isEmpty()) {
             $offset = $q->dequeue();
-            fseek($this->fh, $offset);
-            if (($line = stream_get_line($this->fh, $this->lineLength, PHP_EOL)) !== false) {
+            $this->fseek($offset);
+            if (($line = $this->getLine()) !== false) {
                 echo $line, ' ',  $i, PHP_EOL;
             }
         }
     }
 
+    /**
+     * FOR TESTING PURPOSES ONLY
+     */
+    protected function rewind()
+    {
+        rewind($this->fh);
+    }
+
+    /**
+     * FOR TESTING PURPOSES ONLY
+     */
+    protected function fseek($offset)
+    {
+        fseek($this->fh, $offset);
+    }
+
+    /**
+     * FOR TESTING PURPOSES ONLY
+     */
+    protected function fopen()
+    {
+        $this->fh = fopen($this->filename, "r");
+    }
+
+    /**
+     * FOR TESTING PURPOSES ONLY
+     */
+    protected function fclose()
+    {
+        fclose($this->fh);
+    }
 
     /**
      * @inheritdoc
@@ -138,11 +203,11 @@ class Parser implements RunnableInterface
     public function run(): bool
     {
         $this->range = 0;
-        $this->fh = fopen($this->filename, "r");
+        $this->fopen();
         $this->findRange();
         $this->fillCounters();
         $this->getSorted();
-        fclose($this->fh);
+        $this->fclose();
         return true;
     }
 }

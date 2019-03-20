@@ -5,7 +5,7 @@ namespace varnautov\numbers\classes;
 class Component
 {
     /**
-     * FormBase constructor
+     * Component constructor
      * @param array $attributes
      */
     public function __construct(array $attributes = [])
