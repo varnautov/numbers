@@ -1,0 +1,22 @@
+{
+    "name": "varnautov/numbers",
+    "description": "A numbers problem",
+    "type": "library",
+    "require-dev": {
+        "phpunit/phpunit": "^7.5"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Vasilii Arnautov",
+            "email": "epicgoods@gmail.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "varnautov\\numbers\\": "src/",
+            "varnautov\\numbers\\test\\": "tests/"
+        }
+    }
+}
