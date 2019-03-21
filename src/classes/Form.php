@@ -67,7 +67,7 @@ class Form extends Component implements RunnableInterface
      * FOR TESTING PURPOSES ONLY
      * @return bool
      */
-    public function isFile()
+    public function isFile(): bool
     {
         return is_file($this->filename);
     }

@@ -69,7 +69,7 @@ class Parser implements RunnableInterface
      * @param string $line
      * @return int
      */
-    protected function calculateCount(string $line)
+    protected function calculateCount(string $line): int
     {
         return substr_count($line, $this->needle);
     }
