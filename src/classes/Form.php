@@ -51,8 +51,11 @@ class Form extends Component implements RunnableInterface
         }
 
         // sort
-        if ($this->sort && !in_array(strtolower($this->sort), ['asc', 'desc'])) {
-            throw new ErrorException('Invalid sort.');
+        if ($this->sort) {
+            $this->sort = strtolower($this->sort);
+            if (!in_array($this->sort, ['asc', 'desc'])) {
+                throw new ErrorException('Invalid sort.');
+            }
         }
 
         // parser
