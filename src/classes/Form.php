@@ -22,7 +22,7 @@ class Form extends Component implements RunnableInterface
     public $sort;
 
     /**
-     * @var string
+     * @var ParserComponent
      */
     public $parser;
 
@@ -61,7 +61,7 @@ class Form extends Component implements RunnableInterface
         // parser
         if (!$this->parser) {
             throw new ErrorException('Parser is not set.');
-        } elseif (!is_subclass_of($this->parser, RunnableInterface::class)) {
+        } elseif (!$this->parser instanceof ParserComponent) {
             throw new ErrorException('Parser is invalid.');
         }
     }
@@ -82,7 +82,12 @@ class Form extends Component implements RunnableInterface
     {
         $this->validate();
         $this->sortMethod = $this->sort === 'desc' ? SORT_DESC : SORT_ASC;
-        $parser = new $this->parser($this->filename, $this->needle, $this->sortMethod);
+        $parser = $this->parser;
+        $parser->setAttributes([
+            'filename' => $this->filename,
+            'needle' => $this->needle,
+            'sort' => $this->sortMethod
+        ]);
         /** @var RunnableInterface $parser */
         return $parser->run();
     }

@@ -38,7 +38,7 @@ class ParserTest extends TestCase
     protected function getMock($constructorArguments)
     {
         $m = $this->getMockBuilder(Parser::class)
-            ->setConstructorArgs($constructorArguments)
+            ->setConstructorArgs([$constructorArguments])
             ->disableOriginalClone()
             ->disableArgumentCloning()
             ->disallowMockingUnknownTypes()

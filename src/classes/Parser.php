@@ -2,12 +2,10 @@
 
 namespace varnautov\numbers\classes;
 
-use varnautov\numbers\interfaces\RunnableInterface;
-
 /**
  * @todo analyze replacement for \SplQueue for better performance
  */
-class Parser implements RunnableInterface
+class Parser extends ParserComponent
 {
     /**
      * @var string
@@ -46,16 +44,14 @@ class Parser implements RunnableInterface
 
     /**
      * Parser constructor
-     * @param string $filename
-     * @param string $needle
-     * @param int $sort
+     * @param array $attributes
      */
-    public function __construct(string $filename, string $needle, int $sort)
+    public function __construct(array $attributes = [])
     {
-        $this->filename = $filename;
-        $this->needle = $needle;
-        $this->sort = $sort;
-        $this->lineLength = strlen(''.PHP_INT_MIN);
+        parent::__construct($attributes);
+        if (!$this->lineLength) {
+            $this->lineLength = strlen('' . PHP_INT_MIN);
+        }
     }
 
     protected function validate($n, int $l)

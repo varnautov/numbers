@@ -21,7 +21,7 @@ try {
     $filename = $argv[1] ?? null;
     $needle = $argv[2] ?? null;
     $sort = $argv[3] ?? null;
-    $parser = Parser::class;
+    $parser = new Parser();
     // run
     $form = new Form(compact('filename', 'needle', 'sort', 'parser'));
     $form->run();
